@@ -56,7 +56,7 @@ export default function GetStarted() {
                     </Svg>
 
                     {/* Button */}
-                    <Link href="/auth" asChild>
+                    <Link href="/get-started/auth" asChild>
                         <TouchableOpacity style={styles.CTAButton}>
                             <Text style={styles.CTAButtonText}>
                                 Get Started
