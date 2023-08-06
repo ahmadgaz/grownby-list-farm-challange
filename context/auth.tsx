@@ -1,4 +1,4 @@
-import { router, useSegments } from "expo-router";
+import { router, useRootNavigationState, useSegments } from "expo-router";
 import { User } from "firebase/auth";
 import React, {
     ReactNode,
@@ -23,7 +23,7 @@ function useProtectedRoute(user: User | null) {
     const segments = useSegments();
 
     useEffect(() => {
-        const inAuthGroup = segments[0] === "(home)";
+        const inAuthGroup = segments[0] === "get-started";
 
         if (
             // If the user is not signed in and the initial segment is not anything in the auth group.
@@ -31,7 +31,7 @@ function useProtectedRoute(user: User | null) {
             !inAuthGroup
         ) {
             // Redirect to the sign-in page.
-            router.push("/");
+            router.push("/get-started");
         } else if (user && inAuthGroup) {
             // Redirect away from the sign-in page.
             router.push("/list");

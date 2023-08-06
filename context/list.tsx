@@ -1,17 +1,9 @@
 import { FarmDataType } from "@/components/list/types";
-import { router, useSegments } from "expo-router";
-import { User } from "firebase/auth";
-import React, {
-    ReactNode,
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import React, { ReactNode, createContext, useContext, useState } from "react";
 
 const FarmsContext = createContext<{
-    setFarms: (farms: FarmDataType[]) => void;
-    farms: FarmDataType[];
+    setFarms: React.Dispatch<React.SetStateAction<FarmDataType[] | null>>;
+    farms: FarmDataType[] | null;
 } | null>(null);
 
 // Access farms list
@@ -20,12 +12,12 @@ export function useFarms() {
 }
 
 export function FarmsProvider({ children }: { children: ReactNode }) {
-    const [farms, setFarmList] = useState<FarmDataType[]>([]);
+    const [farms, setFarms] = useState<FarmDataType[] | null>(null);
 
     return (
         <FarmsContext.Provider
             value={{
-                setFarms: (farms: FarmDataType[]) => setFarmList(farms),
+                setFarms,
                 farms,
             }}
         >

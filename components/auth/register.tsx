@@ -47,6 +47,7 @@ export default function Register() {
 
     const register = async (values: RegisterType, onSubmitProps: any) => {
         setLoading(true);
+        setError("");
         try {
             await createUserWithEmailAndPassword(
                 auth,
@@ -67,6 +68,7 @@ export default function Register() {
         } catch (err) {
             console.log(err);
             setError("Check email!");
+            setLoading(false);
         } finally {
             onSubmitProps.resetForm();
             setLoading(false);

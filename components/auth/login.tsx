@@ -39,6 +39,7 @@ export default function Login() {
 
     const login = async (values: LoginType, onSubmitProps: any) => {
         setLoading(true);
+        setError("");
         try {
             await signInWithEmailAndPassword(
                 auth,
@@ -48,6 +49,7 @@ export default function Login() {
         } catch (err) {
             console.log(err);
             setError("Check email and password!");
+            setLoading(false);
         } finally {
             onSubmitProps.resetForm();
             setLoading(false);

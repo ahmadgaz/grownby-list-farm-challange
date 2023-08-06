@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dimensions, StyleSheet, View, Text, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Svg, { Path } from "react-native-svg";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,9 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Login from "@/components/auth/login";
 
-const screenDimensions = Dimensions.get("screen");
-
-export default function GetStarted() {
+export default function AuthScreen() {
     const [hasAnAccount, setHasAnAccount] = useState<boolean>(false);
 
     // Moves the view up when the keyboard comes up
@@ -26,29 +24,27 @@ export default function GetStarted() {
     });
 
     return (
-        <Animated.View
-            style={[{ width: "100%", height: "100%" }, translateStyle]}
-        >
+        <Animated.View style={[styles.parentContainer, translateStyle]}>
             <StatusBar style="dark" translucent={false} />
 
             {/* Background */}
             <View style={styles.backgroundContainer}>
                 <Image
-                    source={require("../../assets/images/farmer.jpg")}
+                    source={require("../../../assets/images/farmer.jpg")}
                     style={styles.backgroundImage}
                 />
                 <LinearGradient
-                    colors={["transparent", "#F7F5F0"]}
+                    colors={["#F7F5F000", "#F7F5F0"]}
                     locations={[0, 0.5]}
                     style={styles.backgroundGradient}
                 />
             </View>
 
             {/* Authentication Screen */}
-            <SafeAreaView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container}>
                 {/* Logo */}
                 <Image
-                    source={require("../../assets/images/logo-light.png")}
+                    source={require("../../../assets/images/logo-light.png")}
                     style={{ width: 161, height: 39 }}
                 />
 
@@ -123,15 +119,22 @@ export default function GetStarted() {
                         </>
                     )}
                 </View>
-            </SafeAreaView>
+            </ScrollView>
         </Animated.View>
     );
 }
 
 const styles = StyleSheet.create({
+    parentContainer: {
+        width: "100%",
+        height: 800,
+        maxHeight: "100%",
+        display: "flex",
+        alignItems: "center",
+    },
     backgroundContainer: {
-        width: screenDimensions.width,
-        height: screenDimensions.height,
+        width: "100%",
+        height: "100%",
         position: "absolute",
     },
     backgroundImage: {
@@ -150,7 +153,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginVertical: 25,
-        width: screenDimensions.width,
+        width: "100%",
+        height: "100%",
+        maxWidth: 1200,
         display: "flex",
     },
 

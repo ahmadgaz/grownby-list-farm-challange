@@ -7,6 +7,7 @@ import Animated, {
 import { FarmDataType } from "./types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Link, router } from "expo-router";
 
 export const Item = memo(
     ({
@@ -54,7 +55,12 @@ export const Item = memo(
                             </Text>
                             <Text style={styles.name}>@{data.name}</Text>
                         </View>
-                        <TouchableOpacity style={styles.CTAButton}>
+                        <TouchableOpacity
+                            style={styles.CTAButton}
+                            onPress={() => {
+                                router.push(`/list/${data.id}`);
+                            }}
+                        >
                             <Text style={styles.CTAButtonText}>View</Text>
                         </TouchableOpacity>
                     </View>

@@ -5,17 +5,17 @@ import {
     Dimensions,
     ViewToken,
     Pressable,
-    TouchableOpacity,
+    TouchableOpacity as TouchableOpacityForIOS,
+    Platform,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
-import { FIREBASE_AUTH } from "@/firebase.config";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "@/firebase.config";
 import { useAuth } from "@/context/auth";
 import LoadingList from "../../list/loadingList";
-import { sampleData } from "../../list/sampleData";
 import { Item } from "../../list/item";
 import Animated, {
     FadeIn,
@@ -28,18 +28,97 @@ import Animated, {
     withTiming,
 } from "react-native-reanimated";
 import { Link } from "expo-router";
-import ActionSheet from "../../list/actionSheet";
+import ActionSheet from "../../list/addFarm";
 import { useFarms } from "@/context/list";
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    onSnapshot,
+    updateDoc,
+} from "firebase/firestore";
 
 const screenDimensions = Dimensions.get("screen");
 
 export default function List() {
-    const [isOpenSheet, setIsOpenSheet] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const farmListContext = useFarms();
-    const data = farmListContext?.farms;
-    const setData = farmListContext?.setFarms;
+    const farmsContext = useFarms();
+    const data = farmsContext?.farms;
+    const setData = farmsContext?.setFarms;
     const userContext = useAuth();
+
+    const [isOpenSheet, setIsOpenSheet] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<boolean>(false);
+
+    // Fetch data
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!userContext?.user) return;
+            setLoading(true);
+            setError(false);
+            try {
+                const docRef = await doc(
+                    FIRESTORE_DB,
+                    "users",
+                    userContext?.user?.uid
+                );
+                const docSnap = await getDoc(docRef);
+                const res = docSnap.data();
+                res && setData && setData(res.farms);
+            } catch (err) {
+                console.log(err);
+                setError(true);
+                setLoading(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [userContext]);
+
+    // When data changes, update firestore
+    useEffect(() => {
+        const updateFirestore = async () => {
+            if (!userContext?.user) return;
+
+            if (data === null) return;
+
+            setLoading(true);
+            setError(false);
+            try {
+                const docRef = await doc(
+                    FIRESTORE_DB,
+                    "users",
+                    userContext?.user?.uid
+                );
+                await updateDoc(docRef, {
+                    farms: data,
+                });
+            } catch (err) {
+                console.log(err);
+                setError(true);
+                setLoading(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+        updateFirestore();
+    }, [data]);
+
+    // When firestore changes, update data
+    useEffect(() => {
+        if (!userContext?.user) return;
+
+        const unsubscribe = onSnapshot(
+            doc(FIRESTORE_DB, "users", userContext?.user?.uid),
+            (doc) => {
+                const res = doc.data();
+                res && setData && setData(res.farms);
+            }
+        );
+        return () => unsubscribe();
+    }, [userContext]);
 
     // List animation
     const viewableItems = useSharedValue<ViewToken[]>([]);
@@ -84,12 +163,6 @@ export default function List() {
         };
     });
 
-    useEffect(() => {
-        setLoading(true);
-        setData && setData(sampleData);
-        setLoading(false);
-    }, []);
-
     return (
         <View style={styles.container}>
             <StatusBar style="dark" translucent />
@@ -122,6 +195,12 @@ export default function List() {
                 {/* List */}
                 {loading ? (
                     <LoadingList />
+                ) : error ? (
+                    <View style={styles.noFarmsMessageContainer}>
+                        <Text style={[styles.noFarmsMessage, { color: "red" }]}>
+                            There has been an error!{"\n"} Try again later.
+                        </Text>
+                    </View>
                 ) : data?.length === 0 ? (
                     <View style={styles.noFarmsMessageContainer}>
                         <Text style={styles.noFarmsMessage}>
@@ -172,25 +251,53 @@ export default function List() {
                             .damping(25)
                             .duration(200)}
                     >
-                        <ActionSheet />
+                        <ActionSheet
+                            loading={loading}
+                            setLoading={setLoading}
+                            setIsOpenSheet={setIsOpenSheet}
+                        />
                     </Animated.View>
                 </>
             )}
 
             {/* Add button */}
-            <SafeAreaView style={styles.addButtonContainer}>
-                <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => {
-                        setIsOpenSheet(!isOpenSheet);
-                    }}
-                    activeOpacity={0.8}
-                >
-                    <Animated.View style={plusAnimation}>
-                        <FontAwesome name="plus" size={20} color="#ffffff" />
-                    </Animated.View>
-                </TouchableOpacity>
-            </SafeAreaView>
+            {Platform.OS !== "ios" ? (
+                <View style={styles.addButtonContainer}>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() => {
+                            setIsOpenSheet(!isOpenSheet);
+                        }}
+                        activeOpacity={0.8}
+                    >
+                        <Animated.View style={plusAnimation}>
+                            <FontAwesome
+                                name="plus"
+                                size={20}
+                                color="#ffffff"
+                            />
+                        </Animated.View>
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                <SafeAreaView style={styles.addButtonContainer}>
+                    <TouchableOpacityForIOS
+                        style={styles.addButton}
+                        onPress={() => {
+                            setIsOpenSheet(!isOpenSheet);
+                        }}
+                        activeOpacity={0.8}
+                    >
+                        <Animated.View style={plusAnimation}>
+                            <FontAwesome
+                                name="plus"
+                                size={20}
+                                color="#ffffff"
+                            />
+                        </Animated.View>
+                    </TouchableOpacityForIOS>
+                </SafeAreaView>
+            )}
         </View>
     );
 }
@@ -262,7 +369,8 @@ const styles = StyleSheet.create({
         width: "100%",
         display: "flex",
         alignItems: "center",
-        bottom: 15,
+        paddingBottom: 15,
+        bottom: 0,
     },
     addButton: {
         backgroundColor: "#3A5C42",
@@ -283,7 +391,7 @@ const styles = StyleSheet.create({
         height: screenDimensions.height,
         width: "100%",
         position: "absolute",
-        bottom: -150,
+        bottom: -120,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
         zIndex: 2,

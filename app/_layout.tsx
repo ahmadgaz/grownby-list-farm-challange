@@ -2,7 +2,7 @@ import { FIREBASE_AUTH } from "@/firebase.config";
 import { AuthProvider, useAuth } from "@/context/auth";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { Slot, SplashScreen, Stack } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { FarmsProvider } from "@/context/list";
@@ -54,15 +54,15 @@ export default function RootLayout() {
     }, [loaded]);
 
     if (!loaded) {
-        return null;
+        return <Slot />;
     }
 
     return (
-        <FarmsProvider>
-            <AuthProvider>
+        <AuthProvider>
+            <FarmsProvider>
                 <RootLayoutNav />
-            </AuthProvider>
-        </FarmsProvider>
+            </FarmsProvider>
+        </AuthProvider>
     );
 }
 
@@ -80,7 +80,7 @@ function RootLayoutNav() {
     return (
         <Stack>
             <Stack.Screen
-                name="(home)"
+                name="index"
                 options={{
                     headerShown: false,
                     contentStyle: {
@@ -89,9 +89,16 @@ function RootLayoutNav() {
                 }}
             />
             <Stack.Screen
+                name="get-started"
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
                 name="list"
                 options={{
                     headerShown: false,
+
                     contentStyle: {
                         backgroundColor: "#F7F5F0",
                     },
