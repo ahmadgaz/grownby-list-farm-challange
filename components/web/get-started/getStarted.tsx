@@ -44,7 +44,7 @@ export default function GetStarted() {
                             </Svg>
 
                             {/* Button */}
-                            <Link href="get-started/auth" asChild>
+                            <Link href="/get-started/auth" asChild>
                                 <Pressable style={styles.CTAButton}>
                                     {({ hovered, pressed }) => (
                                         <Text
