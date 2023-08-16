@@ -45,7 +45,7 @@ export default function AuthScreen() {
                 {/* Logo */}
                 <Image
                     source={require("../../../assets/images/logo-light.png")}
-                    style={{ width: 161, height: 39 }}
+                    style={{ width: 87, height: 60 }}
                 />
 
                 {/* Form and CTA*/}

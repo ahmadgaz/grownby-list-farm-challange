@@ -231,6 +231,8 @@ export default function AddFarm({
                                 source={{ uri: file }}
                                 style={{ width: "100%", height: "100%" }}
                             />
+                        ) : loading ? (
+                            <LoadingSpinner color={"#808080"} />
                         ) : (
                             <FontAwesome
                                 name="camera"

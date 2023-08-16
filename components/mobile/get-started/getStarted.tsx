@@ -31,7 +31,7 @@ export default function GetStarted() {
                 {/* Logo */}
                 <Image
                     source={require("../../../assets/images/logo-dark.png")}
-                    style={{ width: 161, height: 39 }}
+                    style={{ width: 87, height: 60 }}
                 />
 
                 {/* Image and text carousel with pagination*/}

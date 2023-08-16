@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ViewToken, Image } from "react-native";
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import Animated, {
     useAnimatedStyle,
     withTiming,
@@ -8,6 +8,7 @@ import { FarmDataType } from "./types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Link, router } from "expo-router";
+import { useFarms } from "@/context/list";
 
 export const Item = memo(
     ({
@@ -27,6 +28,13 @@ export const Item = memo(
                 transform: [{ scale: withTiming(isVisible ? 1 : 0.6) }],
             };
         });
+
+        const farmsContext = useFarms();
+        const handleDelete = useCallback(() => {
+            farmsContext?.setFarms((prev: FarmDataType[] | null) => {
+                return prev?.filter((farm) => farm.id !== data.id) || null;
+            });
+        }, []);
 
         return (
             <Animated.View style={[styles.item, styleAnimation]}>
@@ -55,14 +63,37 @@ export const Item = memo(
                             </Text>
                             <Text style={styles.name}>@{data.name}</Text>
                         </View>
-                        <TouchableOpacity
-                            style={styles.CTAButton}
-                            onPress={() => {
-                                router.push(`/list/${data.id}`);
-                            }}
-                        >
-                            <Text style={styles.CTAButtonText}>View</Text>
-                        </TouchableOpacity>
+                        <View style={styles.CTAButtonsContainer}>
+                            <View style={styles.CTAButtonContainer}>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.CTAButton,
+                                        { backgroundColor: "#3A5C42" },
+                                    ]}
+                                    onPress={() => {
+                                        router.push(`/list/${data.id}`);
+                                    }}
+                                >
+                                    <Text style={styles.CTAButtonText}>
+                                        View
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.CTAButtonContainer}>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.CTAButton,
+                                        { backgroundColor: "#a41313" },
+                                    ]}
+                                    onPress={handleDelete}
+                                >
+                                    <Text style={styles.CTAButtonText}>
+                                        Delete
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     </View>
                 </View>
             </Animated.View>
@@ -82,6 +113,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.03,
         shadowRadius: 15,
         padding: 15,
+        paddingRight: 10,
     },
     container: {
         display: "flex",
@@ -103,6 +135,13 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
     },
+    CTAButtonsContainer: {
+        display: "flex",
+        flexDirection: "row",
+    },
+    CTAButtonContainer: {
+        flex: 1,
+    },
     CTAContainer: {
         flex: 1,
         height: "100%",
@@ -112,12 +151,12 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     CTAButton: {
-        backgroundColor: "#3A5C42",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         height: 30,
         borderRadius: 7.5,
+        marginRight: 5,
     },
     CTAButtonText: {
         fontSize: 12,

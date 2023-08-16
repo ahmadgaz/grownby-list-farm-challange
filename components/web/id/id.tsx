@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useFarms } from "@/context/list";
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -80,6 +80,23 @@ export default function Id() {
                         )}
                     </View>
                 </View>
+
+                {/* Back arrow */}
+                <SafeAreaView style={styles.topBarContainer}>
+                    <View style={styles.topBar}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.back();
+                            }}
+                        >
+                            <FontAwesome
+                                name="arrow-left"
+                                size={25}
+                                color="#000000"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
             </ScrollView>
         </>
     );
@@ -107,6 +124,24 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         position: "absolute",
+    },
+    topBarContainer: {
+        position: "absolute",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 36,
+        marginVertical: 15,
+        width: "100%",
+        display: "flex",
+    },
+    topBar: {
+        width: "100%",
+        height: 80,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "row",
     },
     scrollView: {
         width: "100%",

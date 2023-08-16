@@ -11,7 +11,7 @@ export default function GetStarted() {
                     {/* Logo */}
                     <Image
                         source={require("../../../assets/images/logo-dark.png")}
-                        style={{ width: 161, height: 39 }}
+                        style={{ width: 87, height: 60 }}
                     />
 
                     <View style={styles.heroContainer}>
@@ -21,10 +21,10 @@ export default function GetStarted() {
                                 Keeping Small Farms in Business
                             </Text>
                             <Text style={styles.CTASubtitle}>
-                                Sell directly to customers, set your own
-                                schedule, and increase sales. We are the only
-                                cooperatively-owned app for farm sales in the
-                                world.
+                                Sell straight to consumers, choose your own
+                                timings, and boost your sales. We stand as the
+                                world's sole cooperatively-owned app dedicated
+                                to farm sales.
                             </Text>
 
                             {/* Break */}

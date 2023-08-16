@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useFarms } from "@/context/list";
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -33,8 +33,12 @@ export default function Id() {
                     source={{ uri: farm?.image }}
                     style={styles.backgroundImage}
                 />
+                <LinearGradient
+                    colors={["#F7F5F000", "#F7F5F000", "#F7F5F0", "#F7F5F0"]}
+                    locations={[0, 0.5, 0.6, 1]}
+                    style={styles.backgroundGradient}
+                />
             </View>
-
             <ScrollView
                 contentContainerStyle={styles.scrollView}
                 overScrollMode="never"
@@ -83,6 +87,23 @@ export default function Id() {
                     </View>
                 </View>
             </ScrollView>
+
+            {/* Back arrow */}
+            <SafeAreaView style={styles.topBarContainer}>
+                <View style={styles.topBar}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.back();
+                        }}
+                    >
+                        <FontAwesome
+                            name="arrow-left"
+                            size={25}
+                            color="#000000"
+                        />
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
         </>
     );
 }
@@ -96,12 +117,31 @@ const styles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
     },
+    topBarContainer: {
+        position: "absolute",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 36,
+        marginVertical: 15,
+        width: screenDimensions.width,
+        display: "flex",
+    },
+    topBar: {
+        width: "100%",
+        height: 80,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "row",
+    },
     backgroundPlaceholderIcon: {
         marginTop: 100,
     },
+
     backgroundImage: {
         width: "100%",
-        height: "100%",
+        height: "60%",
         position: "absolute",
         objectFit: "cover",
     },
